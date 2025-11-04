@@ -140,27 +140,6 @@ public class Board
         m_cells[cell.BoardX, cell.BoardY].Free();
     }
 
-    internal void FillGapsWithNewItems()
-    {
-        for (int x = 0; x < boardSizeX; x++)
-        {
-            for (int y = 0; y < boardSizeY; y++)
-            {
-                Cell cell = m_cells[x, y];
-                if (!cell.IsEmpty) continue;
-
-                NormalItem item = new NormalItem();
-
-                item.SetType(Utils.GetRandomNormalType());
-                item.SetView();
-                item.SetViewRoot(m_root);
-
-                cell.Assign(item);
-                cell.ApplyItemPosition(true);
-            }
-        }
-    }
-
     internal void ExplodeAllItems()
     {
         for (int x = 0; x < boardSizeX; x++)
@@ -186,42 +165,6 @@ public class Board
         item2.View.DOMove(cell1.transform.position, 0.3f).OnComplete(() => { if (callback != null) callback(); });
     }
 
-    public List<Cell> GetHorizontalMatches(Cell cell)
-    {
-        List<Cell> list = new List<Cell>();
-        list.Add(cell);
-
-        //check horizontal match
-        Cell newcell = cell;
-        while (true)
-        {
-            Cell neib = newcell.NeighbourRight;
-            if (neib == null) break;
-
-            if (neib.IsSameType(cell))
-            {
-                list.Add(neib);
-                newcell = neib;
-            }
-            else break;
-        }
-
-        newcell = cell;
-        while (true)
-        {
-            Cell neib = newcell.NeighbourLeft;
-            if (neib == null) break;
-
-            if (neib.IsSameType(cell))
-            {
-                list.Add(neib);
-                newcell = neib;
-            }
-            else break;
-        }
-
-        return list;
-    }
 
 
     public List<Cell> GetVerticalMatches(Cell cell)
@@ -320,33 +263,25 @@ public class Board
         return eMatchDirection.NONE;
     }
 
-    internal List<Cell> FindFirstMatch()
+    internal void FillGapsWithNewItems()
     {
-        List<Cell> list = new List<Cell>();
-
         for (int x = 0; x < boardSizeX; x++)
         {
             for (int y = 0; y < boardSizeY; y++)
             {
                 Cell cell = m_cells[x, y];
+                if (!cell.IsEmpty) continue;
 
-                var listhor = GetHorizontalMatches(cell);
-                if (listhor.Count >= m_matchMin)
-                {
-                    list = listhor;
-                    break;
-                }
+                NormalItem item = new NormalItem();
 
-                var listvert = GetVerticalMatches(cell);
-                if (listvert.Count >= m_matchMin)
-                {
-                    list = listvert;
-                    break;
-                }
+                item.SetType(Utils.GetRandomNormalType());
+                item.SetView();
+                item.SetViewRoot(m_root);
+
+                cell.Assign(item);
+                cell.ApplyItemPosition(true);
             }
         }
-
-        return list;
     }
 
     public List<Cell> CheckBonusIfCompatible(List<Cell> matches)

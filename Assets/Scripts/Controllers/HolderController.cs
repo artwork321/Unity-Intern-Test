@@ -25,4 +25,22 @@ public class HolderController : MonoBehaviour
     {
         return m_holder.GetEmptyCell();
     }
+
+    public void FindMatchesAndCollapse()
+    {
+        List<Cell> matches = m_holder.FindMatch();
+
+        if (matches.Count > 0)
+        {
+            CollapseMatches(matches);
+        }
+    }
+
+    private void CollapseMatches(List<Cell> matches)
+    {
+        for (int i = 0; i < matches.Count; i++)
+        {
+            matches[i].ExplodeItem();
+        }
+    }
 }

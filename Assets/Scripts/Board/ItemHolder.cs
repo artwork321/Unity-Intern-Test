@@ -59,4 +59,41 @@ public class ItemHolder
 
         return null;
     }
+
+    public List<Cell> GetMatches(Cell cell)
+    {
+        List<Cell> list = new List<Cell>();
+        list.Add(cell);
+
+        foreach (Cell o_cell in m_cells)
+        {
+            if (o_cell.IsSameType(cell) && o_cell != cell)
+            {
+                list.Add(o_cell);
+            }
+        }
+
+        return list;
+    }
+
+
+    internal List<Cell> FindMatch()
+    {
+        List<Cell> list = new List<Cell>();
+
+        for (int x = 0; x < holderSize; x++)
+        {
+            Cell cell = m_cells[x];
+
+            var listhor = GetMatches(cell);
+            if (listhor.Count >= m_matchMin)
+            {
+                list = listhor;
+                break;
+            }
+        }
+
+        return list;
+    }
+
 }

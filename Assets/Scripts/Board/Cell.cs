@@ -17,6 +17,7 @@ public class Cell : MonoBehaviour
 
     public Cell NeighbourLeft { get; set; }
 
+    public bool IsClickable = true;
 
     public bool IsEmpty => Item == null;
 

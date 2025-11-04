@@ -91,13 +91,13 @@ public class BoardController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            UnityEngine.Debug.Log($"Click {Time.frameCount} | {Input.mousePosition}");
 
             var hit = Physics2D.Raycast(m_cam.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
             if (hit.collider != null)
             {
                 Cell clickedCell = hit.collider.GetComponent<Cell>();
-                if (clickedCell != null)
+
+                if (clickedCell != null && clickedCell.IsClickable && !clickedCell.IsEmpty)
                 {
                     Item item = clickedCell.Item;
                     Cell emptyHolderCell = m_holderController.GetEmptyCell();
@@ -106,9 +106,10 @@ public class BoardController : MonoBehaviour
                     {
                         emptyHolderCell.Assign(item);
                         emptyHolderCell.ApplyItemMoveToPosition();
-
+                        emptyHolderCell.IsClickable = false;
                     }
                     clickedCell.Free();
+                    m_holderController.FindMatchesAndCollapse();
                 }
             }
         }
@@ -116,113 +117,17 @@ public class BoardController : MonoBehaviour
 
 
 
-
-    private void FindMatchesAndCollapse(Cell cell1, Cell cell2)
-    {
-        if (cell1.Item is BonusItem)
-        {
-            cell1.ExplodeItem();
-            StartCoroutine(ShiftDownItemsCoroutine());
-        }
-        else if (cell2.Item is BonusItem)
-        {
-            cell2.ExplodeItem();
-            StartCoroutine(ShiftDownItemsCoroutine());
-        }
-        else
-        {
-            List<Cell> cells1 = GetMatches(cell1);
-            List<Cell> cells2 = GetMatches(cell2);
-
-            List<Cell> matches = new List<Cell>();
-            matches.AddRange(cells1);
-            matches.AddRange(cells2);
-            matches = matches.Distinct().ToList();
-
-            if (matches.Count < m_gameSettings.MatchesMin)
-            {
-                m_board.Swap(cell1, cell2, () =>
-                {
-                    IsBusy = false;
-                });
-            }
-            else
-            {
-                OnMoveEvent();
-
-                CollapseMatches(matches, cell2);
-            }
-        }
-    }
-
-    private void FindMatchesAndCollapse()
-    {
-        List<Cell> matches = m_board.FindFirstMatch();
-
-        if (matches.Count > 0)
-        {
-            CollapseMatches(matches, null);
-        }
-        else
-        {
-            m_potentialMatch = m_board.GetPotentialMatches();
-            if (m_potentialMatch.Count > 0)
-            {
-                IsBusy = false;
-
-                m_timeAfterFill = 0f;
-            }
-            else
-            {
-                //StartCoroutine(RefillBoardCoroutine());
-                StartCoroutine(ShuffleBoardCoroutine());
-            }
-        }
-    }
-
-    private List<Cell> GetMatches(Cell cell)
-    {
-        List<Cell> listHor = m_board.GetHorizontalMatches(cell);
-        if (listHor.Count < m_gameSettings.MatchesMin)
-        {
-            listHor.Clear();
-        }
-
-        List<Cell> listVert = m_board.GetVerticalMatches(cell);
-        if (listVert.Count < m_gameSettings.MatchesMin)
-        {
-            listVert.Clear();
-        }
-
-        return listHor.Concat(listVert).Distinct().ToList();
-    }
-
-    private void CollapseMatches(List<Cell> matches, Cell cellEnd)
-    {
-        for (int i = 0; i < matches.Count; i++)
-        {
-            matches[i].ExplodeItem();
-        }
-
-        if (matches.Count > m_gameSettings.MatchesMin)
-        {
-            m_board.ConvertNormalToBonus(matches, cellEnd);
-        }
-
-        StartCoroutine(ShiftDownItemsCoroutine());
-    }
-
     private IEnumerator ShiftDownItemsCoroutine()
     {
         m_board.ShiftDownItems();
 
         yield return new WaitForSeconds(0.2f);
 
-        m_board.FillGapsWithNewItems();
+        // m_board.FillGapsWithNewItems();
 
         yield return new WaitForSeconds(0.2f);
 
-        FindMatchesAndCollapse();
+        // FindMatchesAndCollapse();
     }
 
     private IEnumerator RefillBoardCoroutine()
@@ -235,7 +140,7 @@ public class BoardController : MonoBehaviour
 
         yield return new WaitForSeconds(0.2f);
 
-        FindMatchesAndCollapse();
+        // FindMatchesAndCollapse();
     }
 
     private IEnumerator ShuffleBoardCoroutine()
@@ -244,7 +149,7 @@ public class BoardController : MonoBehaviour
 
         yield return new WaitForSeconds(0.3f);
 
-        FindMatchesAndCollapse();
+        // FindMatchesAndCollapse();
     }
 
 
