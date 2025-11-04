@@ -84,11 +84,12 @@ public class GameManager : MonoBehaviour
 
     public void LoadLevel(eLevelMode mode)
     {
-        m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
-        m_boardController.StartGame(this, m_gameSettings);
-
+        // Add a holder of size 5
         m_holderController = new GameObject("HolderController").AddComponent<HolderController>();
         m_holderController.StartGame(this, m_gameSettings);
+
+        m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
+        m_boardController.StartGame(this, m_holderController, m_gameSettings);
 
         if (mode == eLevelMode.MOVES)
         {

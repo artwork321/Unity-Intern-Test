@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 
@@ -14,6 +15,8 @@ public class BoardController : MonoBehaviour
     private Board m_board;
 
     private GameManager m_gameManager;
+
+    private HolderController m_holderController;
 
     private bool m_isDragging;
 
@@ -31,9 +34,11 @@ public class BoardController : MonoBehaviour
 
     private bool m_gameOver;
 
-    public void StartGame(GameManager gameManager, GameSettings gameSettings)
+    public void StartGame(GameManager gameManager, HolderController holderController, GameSettings gameSettings)
     {
         m_gameManager = gameManager;
+
+        m_holderController = holderController;
 
         m_gameSettings = gameSettings;
 
@@ -49,7 +54,6 @@ public class BoardController : MonoBehaviour
     private void Fill()
     {
         m_board.Fill();
-        FindMatchesAndCollapse();
     }
 
     private void OnGameStateChange(GameManager.eStateGame state)
@@ -75,67 +79,43 @@ public class BoardController : MonoBehaviour
         if (m_gameOver) return;
         if (IsBusy) return;
 
-        if (!m_hintIsShown)
-        {
-            m_timeAfterFill += Time.deltaTime;
-            if (m_timeAfterFill > m_gameSettings.TimeForHint)
-            {
-                m_timeAfterFill = 0f;
-                ShowHint();
-            }
-        }
+        // if (!m_hintIsShown)
+        // {
+        //     m_timeAfterFill += Time.deltaTime;
+        //     if (m_timeAfterFill > m_gameSettings.TimeForHint)
+        //     {
+        //         m_timeAfterFill = 0f;
+        //         ShowHint();
+        //     }
+        // }
 
         if (Input.GetMouseButtonDown(0))
         {
+            UnityEngine.Debug.Log($"Click {Time.frameCount} | {Input.mousePosition}");
+
             var hit = Physics2D.Raycast(m_cam.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
             if (hit.collider != null)
             {
-                m_isDragging = true;
-                m_hitCollider = hit.collider;
-            }
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            ResetRayCast();
-        }
-
-        if (Input.GetMouseButton(0) && m_isDragging)
-        {
-            var hit = Physics2D.Raycast(m_cam.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-            if (hit.collider != null)
-            {
-                if (m_hitCollider != null && m_hitCollider != hit.collider)
+                Cell clickedCell = hit.collider.GetComponent<Cell>();
+                if (clickedCell != null)
                 {
-                    StopHints();
+                    Item item = clickedCell.Item;
+                    Cell emptyHolderCell = m_holderController.GetEmptyCell();
 
-                    Cell c1 = m_hitCollider.GetComponent<Cell>();
-                    Cell c2 = hit.collider.GetComponent<Cell>();
-                    if (AreItemsNeighbor(c1, c2))
+                    if (emptyHolderCell != null && item != null)
                     {
-                        IsBusy = true;
-                        SetSortingLayer(c1, c2);
-                        m_board.Swap(c1, c2, () =>
-                        {
-                            FindMatchesAndCollapse(c1, c2);
-                        });
+                        emptyHolderCell.Assign(item);
+                        emptyHolderCell.ApplyItemMoveToPosition();
 
-                        ResetRayCast();
                     }
+                    clickedCell.Free();
                 }
             }
-            else
-            {
-                ResetRayCast();
-            }
         }
     }
 
-    private void ResetRayCast()
-    {
-        m_isDragging = false;
-        m_hitCollider = null;
-    }
+
+
 
     private void FindMatchesAndCollapse(Cell cell1, Cell cell2)
     {
@@ -224,7 +204,7 @@ public class BoardController : MonoBehaviour
             matches[i].ExplodeItem();
         }
 
-        if(matches.Count > m_gameSettings.MatchesMin)
+        if (matches.Count > m_gameSettings.MatchesMin)
         {
             m_board.ConvertNormalToBonus(matches, cellEnd);
         }

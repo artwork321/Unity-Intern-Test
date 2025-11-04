@@ -20,4 +20,9 @@ public class HolderController : MonoBehaviour
 
         m_holder = new ItemHolder(this.transform, gameSettings);
     }
+
+    public Cell GetEmptyCell()
+    {
+        return m_holder.GetEmptyCell();
+    }
 }

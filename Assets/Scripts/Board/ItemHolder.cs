@@ -47,4 +47,16 @@ public class ItemHolder
         }
     }
 
+    public Cell GetEmptyCell()
+    {
+        for (int i = 0; i < m_cells.Length; i++)
+        {
+            if (m_cells[i].IsEmpty)
+            {
+                return m_cells[i];
+            }
+        }
+
+        return null;
+    }
 }

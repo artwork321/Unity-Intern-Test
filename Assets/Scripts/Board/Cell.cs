@@ -33,7 +33,7 @@ public class Cell : MonoBehaviour
     }
 
 
-    public void Free()
+    internal void Free()
     {
         Item = null;
     }

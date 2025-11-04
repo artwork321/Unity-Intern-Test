@@ -135,6 +135,10 @@ public class Board
         }
     }
 
+    public void RemoveCell(Cell cell)
+    {
+        m_cells[cell.BoardX, cell.BoardY].Free();
+    }
 
     internal void FillGapsWithNewItems()
     {
@@ -350,7 +354,7 @@ public class Board
         var dir = GetMatchDirection(matches);
 
         var bonus = matches.Where(x => x.Item is BonusItem).FirstOrDefault();
-        if(bonus == null)
+        if (bonus == null)
         {
             return matches;
         }
