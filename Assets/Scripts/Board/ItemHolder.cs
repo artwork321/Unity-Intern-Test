@@ -48,6 +48,19 @@ public class ItemHolder
         }
     }
 
+    public bool IsFull()
+    {
+        for (int i = 0; i < m_cells.Length; i++)
+        {
+            if (m_cells[i].IsEmpty)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public Cell GetEmptyCell()
     {
         for (int i = 0; i < m_cells.Length; i++)

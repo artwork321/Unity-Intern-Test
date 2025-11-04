@@ -10,18 +10,22 @@ public class UIPanelMain : MonoBehaviour, IMenu
 
     [SerializeField] private Button btnMoves;
 
+    [SerializeField] private Button btnClick;
+
     private UIMainManager m_mngr;
 
     private void Awake()
     {
         btnMoves.onClick.AddListener(OnClickMoves);
         btnTimer.onClick.AddListener(OnClickTimer);
+        btnClick.onClick.AddListener(OnClickClick);
     }
 
     private void OnDestroy()
     {
         if (btnMoves) btnMoves.onClick.RemoveAllListeners();
         if (btnTimer) btnTimer.onClick.RemoveAllListeners();
+        if (btnClick) btnClick.onClick.RemoveAllListeners();
     }
 
     public void Setup(UIMainManager mngr)
@@ -37,6 +41,11 @@ public class UIPanelMain : MonoBehaviour, IMenu
     private void OnClickMoves()
     {
         m_mngr.LoadLevelMoves();
+    }
+
+    private void OnClickClick()
+    {
+        m_mngr.LoadLevelClick();
     }
 
     public void Show()

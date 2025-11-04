@@ -11,7 +11,8 @@ public class GameManager : MonoBehaviour
     public enum eLevelMode
     {
         TIMER,
-        MOVES
+        MOVES,
+        CLICK
     }
 
     public enum eStateGame
@@ -21,6 +22,7 @@ public class GameManager : MonoBehaviour
         GAME_STARTED,
         PAUSE,
         GAME_OVER,
+        GAME_CLEARED
     }
 
     private eStateGame m_state;
@@ -99,15 +101,26 @@ public class GameManager : MonoBehaviour
         else if (mode == eLevelMode.TIMER)
         {
             m_levelCondition = this.gameObject.AddComponent<LevelTime>();
-            m_levelCondition.Setup(m_gameSettings.LevelMoves, m_uiMenu.GetLevelConditionView(), this);
+            m_levelCondition.Setup(m_gameSettings.LevelTime, m_uiMenu.GetLevelConditionView(), this);
+        }
+        else if (mode == eLevelMode.CLICK)
+        {
+            UnityEngine.Debug.Log("Load Level Click");
+            m_levelCondition = this.gameObject.AddComponent<LevelClick>();
+            m_levelCondition.Setup(m_uiMenu.GetLevelConditionView(), m_boardController, m_holderController);
         }
 
-        m_levelCondition.ConditionCompleteEvent += GameOver;
+        m_levelCondition.ConditionCompleteEvent += GameClear;
 
         State = eStateGame.GAME_STARTED;
     }
 
     public void GameOver()
+    {
+        StartCoroutine(WaitBoardController());
+    }
+
+    public void GameClear()
     {
         StartCoroutine(WaitBoardController());
     }
@@ -133,9 +146,11 @@ public class GameManager : MonoBehaviour
 
         State = eStateGame.GAME_OVER;
 
+        UnityEngine.Debug.Log("Game Over");
+
         if (m_levelCondition != null)
         {
-            m_levelCondition.ConditionCompleteEvent -= GameOver;
+            m_levelCondition.ConditionCompleteEvent -= GameClear;
 
             Destroy(m_levelCondition);
             m_levelCondition = null;

@@ -16,5 +16,7 @@ public class GameSettings : ScriptableObject
 
     public float LevelTime = 30f;
 
+    public string LevelClick = "Free Play";
+
     public float TimeForHint = 5f;
 }

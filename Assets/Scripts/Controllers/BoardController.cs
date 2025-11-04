@@ -69,7 +69,7 @@ public class BoardController : MonoBehaviour
                 break;
             case GameManager.eStateGame.GAME_OVER:
                 m_gameOver = true;
-                StopHints();
+                // StopHints();
                 break;
         }
     }
@@ -80,15 +80,6 @@ public class BoardController : MonoBehaviour
         if (m_gameOver) return;
         if (IsBusy) return;
 
-        // if (!m_hintIsShown)
-        // {
-        //     m_timeAfterFill += Time.deltaTime;
-        //     if (m_timeAfterFill > m_gameSettings.TimeForHint)
-        //     {
-        //         m_timeAfterFill = 0f;
-        //         ShowHint();
-        //     }
-        // }
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -103,6 +94,7 @@ public class BoardController : MonoBehaviour
                     Item item = clickedCell.Item;
                     int i_cell = m_holderController.GetIndexCellWithSameType(clickedCell);
                     Cell emptyCell = m_holderController.GetEmptyCell();
+                    UnityEngine.Debug.Log(emptyCell);
 
                     // Add next to the same type in holder
                     if (i_cell != -1)
@@ -112,7 +104,7 @@ public class BoardController : MonoBehaviour
                         emptyCell = sameTypeCell;
                     }
 
-                    if (emptyCell != null)
+                    if (emptyCell != null && emptyCell.IsEmpty)
                     {
                         emptyCell.Assign(item);
                         emptyCell.ApplyItemMoveToPosition();
@@ -120,87 +112,93 @@ public class BoardController : MonoBehaviour
                     }
                     clickedCell.Free();
                     IsBusy = true;
-                    FindMatchesAndCollapse();
+                    FindMatchesAndCollapseHolder();
                 }
             }
         }
     }
 
-    private void FindMatchesAndCollapse()
+    public bool IsEmpty()
     {
+        return m_board.IsEmpty();
+    }
+
+    private void FindMatchesAndCollapseHolder()
+    {
+        OnMoveEvent();
         m_holderController.CollapseMatchesAndShift();
         IsBusy = false;
     }
 
-    private IEnumerator ShiftDownItemsCoroutine()
-    {
-        m_board.ShiftDownItems();
+    // private IEnumerator ShiftDownItemsCoroutine()
+    // {
+    //     m_board.ShiftDownItems();
 
-        yield return new WaitForSeconds(0.2f);
+    //     yield return new WaitForSeconds(0.2f);
 
-        // m_board.FillGapsWithNewItems();
+    //     // m_board.FillGapsWithNewItems();
 
-        yield return new WaitForSeconds(0.2f);
+    //     yield return new WaitForSeconds(0.2f);
 
-        // FindMatchesAndCollapse();
-    }
+    //     // FindMatchesAndCollapse();
+    // }
 
-    private IEnumerator RefillBoardCoroutine()
-    {
-        m_board.ExplodeAllItems();
+    // private IEnumerator RefillBoardCoroutine()
+    // {
+    //     m_board.ExplodeAllItems();
 
-        yield return new WaitForSeconds(0.2f);
+    //     yield return new WaitForSeconds(0.2f);
 
-        m_board.Fill();
+    //     m_board.Fill();
 
-        yield return new WaitForSeconds(0.2f);
+    //     yield return new WaitForSeconds(0.2f);
 
-        // FindMatchesAndCollapse();
-    }
+    //     // FindMatchesAndCollapse();
+    // }
 
-    private IEnumerator ShuffleBoardCoroutine()
-    {
-        m_board.Shuffle();
+    // private IEnumerator ShuffleBoardCoroutine()
+    // {
+    //     m_board.Shuffle();
 
-        yield return new WaitForSeconds(0.3f);
+    //     yield return new WaitForSeconds(0.3f);
 
-        // FindMatchesAndCollapse();
-    }
+    //     // FindMatchesAndCollapse();
+    // }
 
 
-    private void SetSortingLayer(Cell cell1, Cell cell2)
-    {
-        if (cell1.Item != null) cell1.Item.SetSortingLayerHigher();
-        if (cell2.Item != null) cell2.Item.SetSortingLayerLower();
-    }
+    // private void SetSortingLayer(Cell cell1, Cell cell2)
+    // {
+    //     if (cell1.Item != null) cell1.Item.SetSortingLayerHigher();
+    //     if (cell2.Item != null) cell2.Item.SetSortingLayerLower();
+    // }
 
-    private bool AreItemsNeighbor(Cell cell1, Cell cell2)
-    {
-        return cell1.IsNeighbour(cell2);
-    }
+    // private bool AreItemsNeighbor(Cell cell1, Cell cell2)
+    // {
+    //     return cell1.IsNeighbour(cell2);
+    // }
 
     internal void Clear()
     {
         m_board.Clear();
     }
 
-    private void ShowHint()
-    {
-        m_hintIsShown = true;
-        foreach (var cell in m_potentialMatch)
-        {
-            cell.AnimateItemForHint();
-        }
-    }
+    // private void ShowHint()
+    // {
+    //     m_hintIsShown = true;
+    //     foreach (var cell in m_potentialMatch)
+    //     {
+    //         cell.AnimateItemForHint();
+    //     }
+    // }
 
-    private void StopHints()
-    {
-        m_hintIsShown = false;
-        foreach (var cell in m_potentialMatch)
-        {
-            cell.StopHintAnimation();
-        }
+    // private void StopHints()
+    // {
+    //     m_hintIsShown = false;
+    //     foreach (var cell in m_potentialMatch)
+    //     {
+    //         cell.StopHintAnimation();
+    //     }
 
-        m_potentialMatch.Clear();
-    }
+    //     m_potentialMatch.Clear();
+    // }
 }

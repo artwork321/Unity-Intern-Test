@@ -69,6 +69,9 @@ public class UIMainManager : MonoBehaviour
             case GameManager.eStateGame.GAME_OVER:
                 ShowMenu<UIPanelGameOver>();
                 break;
+            case GameManager.eStateGame.GAME_CLEARED:
+                ShowMenu<UIPanelGameOver>();
+                break;
         }
     }
 
@@ -77,14 +80,14 @@ public class UIMainManager : MonoBehaviour
         for (int i = 0; i < m_menuList.Length; i++)
         {
             IMenu menu = m_menuList[i];
-            if(menu is T)
+            if (menu is T)
             {
                 menu.Show();
             }
             else
             {
                 menu.Hide();
-            }            
+            }
         }
     }
 
@@ -112,6 +115,11 @@ public class UIMainManager : MonoBehaviour
     internal void LoadLevelTimer()
     {
         m_gameManager.LoadLevel(GameManager.eLevelMode.TIMER);
+    }
+
+    internal void LoadLevelClick()
+    {
+        m_gameManager.LoadLevel(GameManager.eLevelMode.CLICK);
     }
 
     internal void ShowGameMenu()

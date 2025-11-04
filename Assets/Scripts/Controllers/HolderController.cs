@@ -71,4 +71,9 @@ public class HolderController : MonoBehaviour
             matches[i].ExplodeItem();
         }
     }
+
+    public bool IsFull()
+    {
+        return m_holder.IsFull();
+    }
 }
