@@ -46,19 +46,22 @@ public class HolderController : MonoBehaviour
         m_holder.ShiftItemsRightFromIndex(i);
     }
 
-    public void FindMatchesAndCollapse()
+    public void CollapseMatchesAndShift()
     {
         List<Cell> matches = m_holder.FindMatch();
         if (matches.Count > 0)
         {
-            CollapseMatches(matches);
-            ShiftItemsToFillGap();
+            StartCoroutine(MatchAndShift(matches));
         }
     }
 
-    public void ShiftItemsToFillGap()
+    public IEnumerator MatchAndShift(List<Cell> matches)
     {
+        CollapseMatches(matches);
+        yield return new WaitForSeconds(0.2f); // Wait for explode animation
+
         m_holder.ShiftItemsToFillGap();
+        yield return new WaitForSeconds(0.2f); // Wait for shift animation
     }
 
     private void CollapseMatches(List<Cell> matches)

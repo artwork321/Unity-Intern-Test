@@ -53,7 +53,8 @@ public class BoardController : MonoBehaviour
 
     private void Fill()
     {
-        m_board.Fill();
+        // m_board.Fill();
+        m_board.FillDivisibleBy3();
     }
 
     private void OnGameStateChange(GameManager.eStateGame state)
@@ -118,13 +119,18 @@ public class BoardController : MonoBehaviour
                         clickedCell.Free();
                     }
                     clickedCell.Free();
-                    m_holderController.FindMatchesAndCollapse();
+                    IsBusy = true;
+                    FindMatchesAndCollapse();
                 }
             }
         }
     }
 
-
+    private void FindMatchesAndCollapse()
+    {
+        m_holderController.CollapseMatchesAndShift();
+        IsBusy = false;
+    }
 
     private IEnumerator ShiftDownItemsCoroutine()
     {

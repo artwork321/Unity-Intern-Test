@@ -72,6 +72,51 @@ public class Board
 
     }
 
+    internal void FillDivisibleBy3()
+    {
+        Dictionary<NormalItem.eNormalType, int> typeCount = new Dictionary<NormalItem.eNormalType, int>();
+        List<NormalItem.eNormalType> types = new List<NormalItem.eNormalType>();
+        int numMatchedTypes = boardSizeX * boardSizeY / 3;
+
+        // Initialize each type by 1
+        foreach (NormalItem.eNormalType t in Enum.GetValues(typeof(NormalItem.eNormalType)))
+        {
+            typeCount[t] = m_matchMin;
+        }
+
+        // Randomly select types to be used
+        for (int i = 0; i < numMatchedTypes - 6; i++)
+        {
+            NormalItem.eNormalType randomType = Utils.GetRandomNormalTypeExcept(types.ToArray());
+            typeCount[randomType] = typeCount[randomType] + m_matchMin;
+        }
+
+        // Initialize the list of available types
+        for (int x = 0; x < boardSizeX; x++)
+        {
+            for (int y = 0; y < boardSizeY; y++)
+            {
+                Cell cell = m_cells[x, y];
+                NormalItem item = new NormalItem();
+                NormalItem.eNormalType selectedType = Utils.GetRandomNormalTypeExcept(types.ToArray());
+
+                // Ensure the selected type does not exceed the allowed count
+                typeCount[selectedType]--;
+                if (typeCount[selectedType] == 0)
+                {
+                    types.Add(selectedType);
+                }
+
+                item.SetType(selectedType);
+                item.SetView();
+                item.SetViewRoot(m_root);
+
+                cell.Assign(item);
+                cell.ApplyItemPosition(false);
+            }
+        }
+    }
+
     internal void Fill()
     {
         for (int x = 0; x < boardSizeX; x++)
