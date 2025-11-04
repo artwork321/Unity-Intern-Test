@@ -70,7 +70,7 @@ public class UIMainManager : MonoBehaviour
                 ShowMenu<UIPanelGameOver>();
                 break;
             case GameManager.eStateGame.GAME_CLEARED:
-                ShowMenu<UIPanelGameOver>();
+                ShowMenu<UIPanelWin>();
                 break;
         }
     }

@@ -111,6 +111,7 @@ public class GameManager : MonoBehaviour
         }
 
         m_levelCondition.ConditionCompleteEvent += GameClear;
+        m_levelCondition.ConditionLoseEvent += GameOver;
 
         State = eStateGame.GAME_STARTED;
     }
@@ -118,11 +119,13 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         StartCoroutine(WaitBoardController());
+        State = eStateGame.GAME_OVER;
     }
 
     public void GameClear()
     {
         StartCoroutine(WaitBoardController());
+        State = eStateGame.GAME_CLEARED;
     }
 
     internal void ClearLevel()
@@ -144,9 +147,6 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        State = eStateGame.GAME_OVER;
-
-        UnityEngine.Debug.Log("Game Over");
 
         if (m_levelCondition != null)
         {

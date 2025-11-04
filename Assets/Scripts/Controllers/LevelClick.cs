@@ -32,14 +32,12 @@ public class LevelClick : LevelCondition
 
         if (m_board.IsEmpty() && !m_holder.IsFull())
         {
-            UnityEngine.Debug.Log("Game Over - Holder Full");
             OnConditionComplete();
         }
-        // else if (m_board.IsEmpty())
-        // {
-        //     UnityEngine.Debug.Log("Game Clear - Board Empty");
-        //     // OnConditionComplete();
-        // }
+        else if (m_holder.IsFull())
+        {
+            OnConditionLose();
+        }
     }
 
     protected override void OnDestroy()
