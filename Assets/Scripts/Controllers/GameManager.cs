@@ -38,8 +38,9 @@ public class GameManager : MonoBehaviour
 
     private GameSettings m_gameSettings;
 
-
     private BoardController m_boardController;
+
+    private HolderController m_holderController;
 
     private UIMainManager m_uiMenu;
 
@@ -71,7 +72,7 @@ public class GameManager : MonoBehaviour
     {
         State = state;
 
-        if(State == eStateGame.PAUSE)
+        if (State == eStateGame.PAUSE)
         {
             DOTween.PauseAll();
         }
@@ -85,6 +86,9 @@ public class GameManager : MonoBehaviour
     {
         m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
         m_boardController.StartGame(this, m_gameSettings);
+
+        m_holderController = new GameObject("HolderController").AddComponent<HolderController>();
+        m_holderController.StartGame(this, m_gameSettings);
 
         if (mode == eLevelMode.MOVES)
         {

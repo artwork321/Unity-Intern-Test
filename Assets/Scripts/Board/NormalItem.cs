@@ -12,7 +12,6 @@ public class NormalItem : Item
         TYPE_FOUR,
         TYPE_FIVE,
         TYPE_SIX,
-        TYPE_SEVEN
     }
 
     public eNormalType ItemType;
@@ -44,9 +43,6 @@ public class NormalItem : Item
                 break;
             case eNormalType.TYPE_SIX:
                 prefabname = Constants.PREFAB_NORMAL_TYPE_SIX;
-                break;
-            case eNormalType.TYPE_SEVEN:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_SEVEN;
                 break;
         }
 
