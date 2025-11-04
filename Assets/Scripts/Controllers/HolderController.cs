@@ -26,14 +26,39 @@ public class HolderController : MonoBehaviour
         return m_holder.GetEmptyCell();
     }
 
+    public Cell GetCellWithSameType(Cell cell)
+    {
+        return m_holder.GetCellWithSameType(cell);
+    }
+
+    public int GetIndexCellWithSameType(Cell cell)
+    {
+        return m_holder.GetIndexCellWithSameType(cell);
+    }
+
+    public Cell GetCellAtIndex(int i)
+    {
+        return m_holder.GetCellAtIndex(i);
+    }
+
+    public void ShiftItemsRightFromIndex(int i)
+    {
+        m_holder.ShiftItemsRightFromIndex(i);
+    }
+
     public void FindMatchesAndCollapse()
     {
         List<Cell> matches = m_holder.FindMatch();
-
         if (matches.Count > 0)
         {
             CollapseMatches(matches);
+            ShiftItemsToFillGap();
         }
+    }
+
+    public void ShiftItemsToFillGap()
+    {
+        m_holder.ShiftItemsToFillGap();
     }
 
     private void CollapseMatches(List<Cell> matches)

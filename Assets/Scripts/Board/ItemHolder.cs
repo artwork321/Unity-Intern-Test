@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class ItemHolder
@@ -58,6 +59,80 @@ public class ItemHolder
         }
 
         return null;
+    }
+
+    public Cell GetCellWithSameType(Cell cell)
+    {
+        for (int i = 0; i < m_cells.Length; i++)
+        {
+            if (!m_cells[i].IsEmpty && m_cells[i].IsSameType(cell))
+            {
+                return m_cells[i];
+            }
+        }
+
+        return null;
+    }
+
+    public int GetIndexCellWithSameType(Cell cell)
+    {
+        for (int i = 0; i < m_cells.Length; i++)
+        {
+            if (!m_cells[i].IsEmpty && m_cells[i].IsSameType(cell))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    public Cell GetCellAtIndex(int i)
+    {
+        if (i >= 0 && i < holderSize)
+        {
+            return m_cells[i];
+        }
+
+        return null;
+    }
+
+    public void ShiftItemsRightFromIndex(int i)
+    {
+        for (int x = holderSize - 2; x >= i; x--)
+        {
+            Cell fromCell = m_cells[x];
+            Cell toCell = m_cells[x + 1];
+
+            if (!fromCell.IsEmpty && toCell.IsEmpty)
+            {
+                Item item = fromCell.Item;
+                toCell.Assign(item);
+                toCell.ApplyItemMoveToPosition();
+                fromCell.Free();
+            }
+        }
+    }
+
+    public void ShiftItemsToFillGap()
+    {
+        for (int x = 1; x < holderSize; x++)
+        {
+            Cell fromCell = m_cells[x];
+            Cell toCell = m_cells[x - 1];
+
+            while (toCell.BoardX - 1 >= 0 && m_cells[toCell.BoardX - 1].IsEmpty)
+            {
+                toCell = m_cells[toCell.BoardX - 1];
+            }
+            if (!fromCell.IsEmpty && toCell.IsEmpty)
+            {
+                Item item = fromCell.Item;
+                toCell.Assign(item);
+                toCell.ApplyItemMoveToPosition();
+                fromCell.Free();
+            }
+        }
     }
 
     public List<Cell> GetMatches(Cell cell)

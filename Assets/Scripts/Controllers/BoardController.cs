@@ -100,13 +100,22 @@ public class BoardController : MonoBehaviour
                 if (clickedCell != null && clickedCell.IsClickable && !clickedCell.IsEmpty)
                 {
                     Item item = clickedCell.Item;
-                    Cell emptyHolderCell = m_holderController.GetEmptyCell();
+                    int i_cell = m_holderController.GetIndexCellWithSameType(clickedCell);
+                    Cell emptyCell = m_holderController.GetEmptyCell();
 
-                    if (emptyHolderCell != null && item != null)
+                    // Add next to the same type in holder
+                    if (i_cell != -1)
                     {
-                        emptyHolderCell.Assign(item);
-                        emptyHolderCell.ApplyItemMoveToPosition();
-                        emptyHolderCell.IsClickable = false;
+                        Cell sameTypeCell = m_holderController.GetCellAtIndex(i_cell);
+                        m_holderController.ShiftItemsRightFromIndex(i_cell);
+                        emptyCell = sameTypeCell;
+                    }
+
+                    if (emptyCell != null)
+                    {
+                        emptyCell.Assign(item);
+                        emptyCell.ApplyItemMoveToPosition();
+                        clickedCell.Free();
                     }
                     clickedCell.Free();
                     m_holderController.FindMatchesAndCollapse();
