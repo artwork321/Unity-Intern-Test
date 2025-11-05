@@ -102,11 +102,7 @@ public class BoardController : MonoBehaviour
                     {
                         AddItemFromHolderToBoard(clickedCell);
                     }
-
                 }
-
-
-
             }
         }
     }
@@ -156,6 +152,7 @@ public class BoardController : MonoBehaviour
                 UnityEngine.Debug.Log($"AutoWin: Adding item of type {(cell.Item as NormalItem).ItemType}");
                 AddItemFromBoardToHolder(cell);
                 FindMatchesAndCollapseHolder();
+                IsBusy = true;
             }
         }
 
@@ -171,6 +168,7 @@ public class BoardController : MonoBehaviour
                 UnityEngine.Debug.Log($"AutoWin: Adding item of type {(cell.Item as NormalItem).ItemType}");
                 AddItemFromBoardToHolder(cell);
                 FindMatchesAndCollapseHolder();
+                IsBusy = true;
             }
         }
 
@@ -245,7 +243,7 @@ public class BoardController : MonoBehaviour
     {
         Item item = clickedCell.Item;
         Cell emptyCell = item.InitialCell;
-        
+
         emptyCell.Assign(item);
         emptyCell.ApplyItemMoveToPosition();
         clickedCell.Free();
