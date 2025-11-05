@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIPanelGame : MonoBehaviour,IMenu
+public class UIPanelGame : MonoBehaviour, IMenu
 {
     public Text LevelConditionView;
 
@@ -19,7 +19,7 @@ public class UIPanelGame : MonoBehaviour,IMenu
         btnPause.onClick.AddListener(OnClickPause);
         btnAutoWin.onClick.AddListener(OnClickWin);
         btnAutoLose.onClick.AddListener(OnClickLose);
-        
+
     }
 
     private void OnClickPause()
@@ -30,10 +30,10 @@ public class UIPanelGame : MonoBehaviour,IMenu
     private void OnClickWin()
     {
         BoardController m_boardController = FindObjectOfType<BoardController>();
-        // m_boardController.AutoLose();
+        StartCoroutine(m_boardController.AutoWin());
     }
-    
-        private void OnClickLose()
+
+    private void OnClickLose()
     {
         BoardController m_boardController = FindObjectOfType<BoardController>();
         StartCoroutine(m_boardController.AutoLose());

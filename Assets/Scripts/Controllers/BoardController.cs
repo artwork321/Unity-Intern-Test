@@ -80,10 +80,8 @@ public class BoardController : MonoBehaviour
         if (m_gameOver) return;
         if (IsBusy) return;
 
-
         if (Input.GetMouseButtonDown(0))
         {
-
             var hit = Physics2D.Raycast(m_cam.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
             if (hit.collider != null)
             {
@@ -111,40 +109,96 @@ public class BoardController : MonoBehaviour
         IsBusy = false;
     }
 
+    public IEnumerator AutoWin()
+    {
+        IsBusy = true;
+
+        // Count number of each item type currently in the holder
+        var holderCells = m_holderController.GetAllItemCells();
+        var types = new Dictionary<NormalItem.eNormalType, int>();
+
+        foreach (var cell in holderCells)
+        {
+            var normalItem = cell.Item as NormalItem;
+            if (normalItem == null) continue;
+
+            if (!types.ContainsKey(normalItem.ItemType))
+                types[normalItem.ItemType] = 0;
+
+            types[normalItem.ItemType]++;
+        }
+
+        // Fill holder to make sets of 3 for existing types
+        foreach (var kvp in types.ToList())
+        {
+            var type = kvp.Key;
+            int needed = m_board.MatchMin - kvp.Value;
+            if (needed <= 0) continue;
+
+            var matchedCells = m_board.PickMatchedCells(type, needed);
+            foreach (var cell in matchedCells)
+            {
+                yield return new WaitForSeconds(0.5f);
+                UnityEngine.Debug.Log($"AutoWin: Adding item of type {(cell.Item as NormalItem).ItemType}");
+                AddItemFromBoardToHolder(cell);
+                FindMatchesAndCollapseHolder();
+            }
+        }
+
+        // Fill remaining holder slots with any available matches from the board
+        var remainingCellsByType = m_board.DictOfCellsByType();
+
+        foreach (var kvp in remainingCellsByType.ToList())
+        {
+            var matchedCells = kvp.Value;
+            foreach (var cell in matchedCells)
+            {
+                yield return new WaitForSeconds(0.5f);
+                UnityEngine.Debug.Log($"AutoWin: Adding item of type {(cell.Item as NormalItem).ItemType}");
+                AddItemFromBoardToHolder(cell);
+                FindMatchesAndCollapseHolder();
+            }
+        }
+
+        IsBusy = false;
+        OnMoveEvent();
+    }
+
+
     public IEnumerator AutoLose()
     {
         IsBusy = true;
 
-        // Count number of occurrences of each type
-        Dictionary<NormalItem.eNormalType, int> unmatchedType = new Dictionary<NormalItem.eNormalType, int>();
-        List<Cell> holderCells = m_holderController.GetAllItemCells();
+        // Count number of each item type currently in holder
+        var holderCells = m_holderController.GetAllItemCells();
+        var unmatchedTypes = new Dictionary<NormalItem.eNormalType, int>();
 
-        foreach (Cell cell in holderCells)
+        foreach (var cell in holderCells)
         {
-            NormalItem normalItem = cell.Item as NormalItem;
+            var normalItem = cell.Item as NormalItem;
+            if (normalItem == null) continue;
 
-            if (!unmatchedType.ContainsKey(normalItem.ItemType))
-            {
-                unmatchedType[normalItem.ItemType] = 1;
-            }
-            unmatchedType[normalItem.ItemType]++;
+            if (!unmatchedTypes.ContainsKey(normalItem.ItemType))
+                unmatchedTypes[normalItem.ItemType] = 0;
+
+            unmatchedTypes[normalItem.ItemType]++;
         }
 
-        // Fill other cells with types that do not have a match
-        int count = m_gameSettings.HolderSize - holderCells.Count;
-        List<Cell> selectedCells = m_board.PickUnmatchedCells(unmatchedType, count);
+        // Fill remaining slots with items that do NOT form matches
+        int remainingSlots = m_gameSettings.HolderSize - holderCells.Count;
+        var selectedCells = m_board.PickUnmatchedCells(unmatchedTypes, remainingSlots);
 
-        foreach (Cell cell in selectedCells)
+        foreach (var cell in selectedCells)
         {
             yield return new WaitForSeconds(0.5f);
-            UnityEngine.Debug.Log("AutoLose: Adding item of type " + (cell.Item as NormalItem).ItemType);
+            UnityEngine.Debug.Log($"AutoLose: Adding item of type {(cell.Item as NormalItem)?.ItemType}");
             AddItemFromBoardToHolder(cell);
         }
 
         IsBusy = false;
         OnMoveEvent();
-        yield break;
     }
+
 
     public void AddItemFromBoardToHolder(Cell clickedCell)
     {

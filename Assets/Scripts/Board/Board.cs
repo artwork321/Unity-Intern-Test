@@ -72,6 +72,12 @@ public class Board
 
     }
 
+    public int MatchMin
+    {
+        get => m_matchMin;
+        private set => m_matchMin = value;
+    }
+
     internal void FillDivisibleBy3()
     {
         Dictionary<NormalItem.eNormalType, int> typeCount = new Dictionary<NormalItem.eNormalType, int>();
@@ -117,23 +123,15 @@ public class Board
         }
     }
 
-    public List<Cell> PickUnmatchedCells(Dictionary<NormalItem.eNormalType, int> unmatchedType, int count)
+    public List<Cell> PickMatchedCells(NormalItem.eNormalType type, int count)
     {
         List<Cell> result = new List<Cell>();
 
         // Pick unmatched cells until count is reached
         foreach (Cell cell in m_cells)
         {
-            if (!cell.IsEmpty)
+            if (!cell.IsEmpty && (type == (cell.Item as NormalItem).ItemType))
             {
-                if (!unmatchedType.ContainsKey((cell.Item as NormalItem).ItemType))
-                {
-                    unmatchedType[(cell.Item as NormalItem).ItemType] = 1;
-                }
-                else if (unmatchedType[(cell.Item as NormalItem).ItemType] < 3)
-                {
-                    unmatchedType[(cell.Item as NormalItem).ItemType]++;
-                }
                 result.Add(cell);
 
                 if (result.Count >= count)
@@ -145,6 +143,56 @@ public class Board
 
         return result;
     }
+
+    public Dictionary<NormalItem.eNormalType, List<Cell>> DictOfCellsByType()
+    {
+        var remainingCells = new Dictionary<NormalItem.eNormalType, List<Cell>>();
+
+        foreach (Cell cell in m_cells)
+        {
+            if (cell.IsEmpty) continue;
+
+            var type = (cell.Item as NormalItem).ItemType;
+
+            if (!remainingCells.ContainsKey(type))
+                remainingCells[type] = new List<Cell>();
+
+            remainingCells[type].Add(cell);
+        }
+
+        return remainingCells;
+    }
+
+
+    public List<Cell> PickUnmatchedCells(Dictionary<NormalItem.eNormalType, int> unmatchedType, int count)
+    {
+        var result = new List<Cell>();
+
+        foreach (var cell in m_cells)
+        {
+            if (cell.IsEmpty) continue;
+
+            var normalItem = cell.Item as NormalItem;
+            if (normalItem == null) continue;
+
+            var type = normalItem.ItemType;
+
+            if (unmatchedType.ContainsKey(type) && unmatchedType[type] >= 3)
+                continue;
+
+            if (!unmatchedType.ContainsKey(type))
+                unmatchedType[type] = 0;
+
+            unmatchedType[type]++;
+            result.Add(cell);
+
+            if (result.Count >= count)
+                break;
+        }
+
+        return result;
+    }
+
 
     internal bool IsEmpty()
     {
