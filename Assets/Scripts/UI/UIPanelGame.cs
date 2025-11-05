@@ -9,17 +9,34 @@ public class UIPanelGame : MonoBehaviour,IMenu
     public Text LevelConditionView;
 
     [SerializeField] private Button btnPause;
+    [SerializeField] private Button btnAutoWin;
+    [SerializeField] private Button btnAutoLose;
 
     private UIMainManager m_mngr;
 
     private void Awake()
     {
         btnPause.onClick.AddListener(OnClickPause);
+        btnAutoWin.onClick.AddListener(OnClickWin);
+        btnAutoLose.onClick.AddListener(OnClickLose);
+        
     }
 
     private void OnClickPause()
     {
         m_mngr.ShowPauseMenu();
+    }
+
+    private void OnClickWin()
+    {
+        BoardController m_boardController = FindObjectOfType<BoardController>();
+        // m_boardController.AutoLose();
+    }
+    
+        private void OnClickLose()
+    {
+        BoardController m_boardController = FindObjectOfType<BoardController>();
+        StartCoroutine(m_boardController.AutoLose());
     }
 
     public void Setup(UIMainManager mngr)

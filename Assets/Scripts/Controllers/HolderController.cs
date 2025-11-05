@@ -21,6 +21,21 @@ public class HolderController : MonoBehaviour
         m_holder = new ItemHolder(this.transform, gameSettings);
     }
 
+    public List<Cell> GetAllItemCells()
+    {
+        List<Cell> itemCells = new List<Cell>();
+
+        foreach (Cell cell in m_holder.GetAllCells())
+        {
+            if (!cell.IsEmpty)
+            {
+                itemCells.Add(cell);
+            }
+        }
+
+        return itemCells;
+    }
+
     public Cell GetEmptyCell()
     {
         return m_holder.GetEmptyCell();

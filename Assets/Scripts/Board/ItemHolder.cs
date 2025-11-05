@@ -61,6 +61,11 @@ public class ItemHolder
         return true;
     }
 
+    public Cell[] GetAllCells()
+    {
+        return m_cells;
+    }
+
     public Cell GetEmptyCell()
     {
         for (int i = 0; i < m_cells.Length; i++)

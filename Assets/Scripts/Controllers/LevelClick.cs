@@ -23,6 +23,7 @@ public class LevelClick : LevelCondition
 
         m_board.OnMoveEvent += OnMove;
     }
+    
 
     private void OnMove()
     {

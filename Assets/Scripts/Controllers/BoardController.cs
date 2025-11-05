@@ -91,26 +91,7 @@ public class BoardController : MonoBehaviour
 
                 if (clickedCell != null && clickedCell.IsClickable && !clickedCell.IsEmpty)
                 {
-                    Item item = clickedCell.Item;
-                    int i_cell = m_holderController.GetIndexCellWithSameType(clickedCell);
-                    Cell emptyCell = m_holderController.GetEmptyCell();
-                    UnityEngine.Debug.Log(emptyCell);
-
-                    // Add next to the same type in holder
-                    if (i_cell != -1)
-                    {
-                        Cell sameTypeCell = m_holderController.GetCellAtIndex(i_cell);
-                        m_holderController.ShiftItemsRightFromIndex(i_cell);
-                        emptyCell = sameTypeCell;
-                    }
-
-                    if (emptyCell != null && emptyCell.IsEmpty)
-                    {
-                        emptyCell.Assign(item);
-                        emptyCell.ApplyItemMoveToPosition();
-                        clickedCell.Free();
-                    }
-                    clickedCell.Free();
+                    AddItemFromBoardToHolder(clickedCell);
                     IsBusy = true;
                     FindMatchesAndCollapseHolder();
                 }
@@ -128,6 +109,64 @@ public class BoardController : MonoBehaviour
         OnMoveEvent();
         m_holderController.CollapseMatchesAndShift();
         IsBusy = false;
+    }
+
+    public IEnumerator AutoLose()
+    {
+        IsBusy = true;
+
+        // Count number of occurrences of each type
+        Dictionary<NormalItem.eNormalType, int> unmatchedType = new Dictionary<NormalItem.eNormalType, int>();
+        List<Cell> holderCells = m_holderController.GetAllItemCells();
+
+        foreach (Cell cell in holderCells)
+        {
+            NormalItem normalItem = cell.Item as NormalItem;
+
+            if (!unmatchedType.ContainsKey(normalItem.ItemType))
+            {
+                unmatchedType[normalItem.ItemType] = 1;
+            }
+            unmatchedType[normalItem.ItemType]++;
+        }
+
+        // Fill other cells with types that do not have a match
+        int count = m_gameSettings.HolderSize - holderCells.Count;
+        List<Cell> selectedCells = m_board.PickUnmatchedCells(unmatchedType, count);
+
+        foreach (Cell cell in selectedCells)
+        {
+            yield return new WaitForSeconds(0.5f);
+            UnityEngine.Debug.Log("AutoLose: Adding item of type " + (cell.Item as NormalItem).ItemType);
+            AddItemFromBoardToHolder(cell);
+        }
+
+        IsBusy = false;
+        OnMoveEvent();
+        yield break;
+    }
+
+    public void AddItemFromBoardToHolder(Cell clickedCell)
+    {
+        Item item = clickedCell.Item;
+        int i_cell = m_holderController.GetIndexCellWithSameType(clickedCell);
+        Cell emptyCell = m_holderController.GetEmptyCell();
+
+        // Add next to the same type in holder
+        if (i_cell != -1)
+        {
+            Cell sameTypeCell = m_holderController.GetCellAtIndex(i_cell);
+            m_holderController.ShiftItemsRightFromIndex(i_cell);
+            emptyCell = sameTypeCell;
+        }
+
+        if (emptyCell != null && emptyCell.IsEmpty)
+        {
+            emptyCell.Assign(item);
+            emptyCell.ApplyItemMoveToPosition();
+            clickedCell.Free();
+        }
+        clickedCell.Free();
     }
 
     // private IEnumerator ShiftDownItemsCoroutine()
