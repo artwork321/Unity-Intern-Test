@@ -108,6 +108,7 @@ public class GameManager : MonoBehaviour
         if (mode == eLevelMode.TIMER)
         {
             m_levelCondition = this.gameObject.AddComponent<LevelTime>();
+            UnityEngine.Debug.Log(m_gameSettings.LevelTime);
             m_levelCondition.Setup(m_gameSettings.LevelTime, m_uiMenu.GetLevelConditionView(), this, m_boardController, m_holderController);
         }
         else if (mode == eLevelMode.CLICK)
