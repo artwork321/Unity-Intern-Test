@@ -9,6 +9,8 @@ public class Item
 {
     public Cell Cell { get; private set; }
 
+    public Cell InitialCell { get; private set; }
+
     public Transform View { get; private set; }
 
 
@@ -30,6 +32,11 @@ public class Item
 
     public virtual void SetCell(Cell cell)
     {
+        if (InitialCell == null)
+        {
+            InitialCell = cell;
+        }
+
         Cell = cell;
     }
 

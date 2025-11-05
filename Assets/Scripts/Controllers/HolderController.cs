@@ -91,4 +91,9 @@ public class HolderController : MonoBehaviour
     {
         return m_holder.IsFull();
     }
+
+    public bool IsEmpty()
+    {
+        return m_holder.IsEmpty();
+    }
 }

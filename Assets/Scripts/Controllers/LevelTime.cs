@@ -9,9 +9,17 @@ public class LevelTime : LevelCondition
 
     private GameManager m_mngr;
 
-    public override void Setup(float value, Text txt, GameManager mngr)
+    private HolderController m_holder;
+
+    private BoardController m_board;
+
+    public override void Setup(float value, Text txt, GameManager mngr, BoardController board, HolderController itemHolder)
     {
-        base.Setup(value, txt, mngr);
+        base.Setup(value, txt, mngr, board, itemHolder);
+
+        m_board = board;
+
+        m_holder = itemHolder;
 
         m_mngr = mngr;
 
@@ -30,9 +38,13 @@ public class LevelTime : LevelCondition
 
         UpdateText();
 
-        if (m_time <= -1f)
+        if (m_board.IsEmpty() && m_holder.IsEmpty())
         {
             OnConditionComplete();
+        }
+        else if (m_time <= -1f)
+        {
+            OnConditionLose();
         }
     }
 

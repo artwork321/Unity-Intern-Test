@@ -37,6 +37,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private eLevelMode m_mode;
+
+    public eLevelMode Mode
+    {
+        get { return m_mode; }
+        private set
+        {
+            m_mode = value;
+        }
+    }
 
     private GameSettings m_gameSettings;
 
@@ -93,15 +103,12 @@ public class GameManager : MonoBehaviour
         m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
         m_boardController.StartGame(this, m_holderController, m_gameSettings);
 
-        if (mode == eLevelMode.MOVES)
-        {
-            m_levelCondition = this.gameObject.AddComponent<LevelMoves>();
-            m_levelCondition.Setup(m_gameSettings.LevelMoves, m_uiMenu.GetLevelConditionView(), m_boardController);
-        }
-        else if (mode == eLevelMode.TIMER)
+        Mode = mode;
+
+        if (mode == eLevelMode.TIMER)
         {
             m_levelCondition = this.gameObject.AddComponent<LevelTime>();
-            m_levelCondition.Setup(m_gameSettings.LevelTime, m_uiMenu.GetLevelConditionView(), this);
+            m_levelCondition.Setup(m_gameSettings.LevelTime, m_uiMenu.GetLevelConditionView(), this, m_boardController, m_holderController);
         }
         else if (mode == eLevelMode.CLICK)
         {

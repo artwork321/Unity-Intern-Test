@@ -52,7 +52,7 @@ public class Board
                 go.transform.SetParent(m_root);
 
                 Cell cell = go.GetComponent<Cell>();
-                cell.Setup(x, y);
+                cell.Setup(x, y, true);
 
                 m_cells[x, y] = cell;
             }

@@ -85,14 +85,28 @@ public class BoardController : MonoBehaviour
             var hit = Physics2D.Raycast(m_cam.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
             if (hit.collider != null)
             {
+
                 Cell clickedCell = hit.collider.GetComponent<Cell>();
 
                 if (clickedCell != null && clickedCell.IsClickable && !clickedCell.IsEmpty)
                 {
-                    AddItemFromBoardToHolder(clickedCell);
-                    IsBusy = true;
-                    FindMatchesAndCollapseHolder();
+                    // Move cell from Board to Holder
+                    if (clickedCell.InBoard)
+                    {
+                        AddItemFromBoardToHolder(clickedCell);
+                        IsBusy = true;
+                        FindMatchesAndCollapseHolder();
+                    }
+                    // Move cell from Holder to Board
+                    else
+                    {
+                        AddItemFromHolderToBoard(clickedCell);
+                    }
+
                 }
+
+
+
             }
         }
     }
@@ -220,6 +234,20 @@ public class BoardController : MonoBehaviour
             emptyCell.ApplyItemMoveToPosition();
             clickedCell.Free();
         }
+
+        if (m_gameManager.Mode == GameManager.eLevelMode.CLICK)
+        {
+            emptyCell.IsClickable = false;
+        }
+    }
+
+    public void AddItemFromHolderToBoard(Cell clickedCell)
+    {
+        Item item = clickedCell.Item;
+        Cell emptyCell = item.InitialCell;
+        
+        emptyCell.Assign(item);
+        emptyCell.ApplyItemMoveToPosition();
         clickedCell.Free();
     }
 

@@ -18,12 +18,12 @@ public class LevelCondition : MonoBehaviour
         m_txt = txt;
     }
 
-    public virtual void Setup(float value, Text txt, GameManager mngr)
+    public virtual void Setup(float value, Text txt, BoardController board)
     {
         m_txt = txt;
     }
 
-    public virtual void Setup(float value, Text txt, BoardController board)
+    public virtual void Setup(float value, Text txt, GameManager mngr, BoardController board, HolderController itemHolder)
     {
         m_txt = txt;
     }

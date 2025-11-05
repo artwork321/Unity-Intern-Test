@@ -42,7 +42,7 @@ public class ItemHolder
             go.transform.SetParent(m_root);
 
             Cell cell = go.GetComponent<Cell>();
-            cell.Setup(x, 0);
+            cell.Setup(x, 0, false);
 
             m_cells[x] = cell;
         }
@@ -53,6 +53,19 @@ public class ItemHolder
         for (int i = 0; i < m_cells.Length; i++)
         {
             if (m_cells[i].IsEmpty)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public bool IsEmpty()
+    {
+        for (int i = 0; i < m_cells.Length; i++)
+        {
+            if (!m_cells[i].IsEmpty)
             {
                 return false;
             }

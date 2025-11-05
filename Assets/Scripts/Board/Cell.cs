@@ -21,10 +21,13 @@ public class Cell : MonoBehaviour
 
     public bool IsEmpty => Item == null;
 
-    public void Setup(int cellX, int cellY)
+    public bool InBoard;
+
+    public void Setup(int cellX, int cellY, bool InBoard)
     {
         this.BoardX = cellX;
         this.BoardY = cellY;
+        this.InBoard = InBoard;
     }
 
     public bool IsNeighbour(Cell other)
